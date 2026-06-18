@@ -17,6 +17,15 @@ const EnquirySchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  status: {
+    type: String,
+    enum: ['Pending', 'Contacted', 'Enrolled'],
+    default: 'Pending',
+  },
+  notes: {
+    type: String,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

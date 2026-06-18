@@ -16,4 +16,48 @@ export const submitEnquiry = async (data) => {
   }
 };
 
+// Admin Auth
+export const adminLogin = async (email, password) => {
+  try {
+    const response = await API.post('/admin/login', { email, password });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Authentication failed. Please check your credentials.');
+  }
+};
+
+// Manage Enquiries
+export const getEnquiries = async (token) => {
+  try {
+    const response = await API.get('/admin/enquiries', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Failed to retrieve enquiries.');
+  }
+};
+
+export const updateEnquiry = async (id, data, token) => {
+  try {
+    const response = await API.put(`/admin/enquiries/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Failed to update enquiry.');
+  }
+};
+
+export const deleteEnquiry = async (id, token) => {
+  try {
+    const response = await API.delete(`/admin/enquiries/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Failed to delete enquiry.');
+  }
+};
+
 export default API;

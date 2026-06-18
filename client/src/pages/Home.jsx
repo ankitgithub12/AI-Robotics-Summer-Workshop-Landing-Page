@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import WorkshopDetails from '../components/WorkshopDetails';
 import Features from '../components/Features';
@@ -9,9 +9,34 @@ import FAQ from '../components/FAQ';
 import RegistrationForm from '../components/RegistrationForm';
 import Footer from '../components/Footer';
 import AuthModal from '../components/AuthModal';
+import AdminDashboard from '../components/AdminDashboard';
 
 export default function Home() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [adminToken, setAdminToken] = useState('');
+
+  // Check for stored session on load
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      setAdminToken(token);
+    }
+  }, []);
+
+  const handleLoginSuccess = (token) => {
+    setAdminToken(token);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    setAdminToken('');
+  };
+
+  // Switch between Landing Page and Admin Dashboard
+  if (adminToken) {
+    return <AdminDashboard token={adminToken} onLogout={handleLogout} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -28,7 +53,11 @@ export default function Home() {
       <Footer />
 
       {/* Authentication Modal Popup */}
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }

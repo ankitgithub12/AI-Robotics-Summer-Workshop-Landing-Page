@@ -14,9 +14,16 @@ exports.createEnquiry = async (req, res) => {
     // Save to database
     await newEnquiry.save();
 
+    // Emit real-time socket notification
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('new-enquiry', newEnquiry);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Registration submitted successfully',
+      enquiry: newEnquiry,
     });
   } catch (error) {
     console.error('Error saving enquiry:', error);

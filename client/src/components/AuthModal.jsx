@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { FaEnvelope, FaLock, FaUser, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { adminLogin } from '../services/api';
 
-export default function AuthModal({ isOpen, onClose }) {
+export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
   const [authSuccess, setAuthSuccess] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const {
     register,
@@ -15,20 +17,43 @@ export default function AuthModal({ isOpen, onClose }) {
   } = useForm({ mode: 'onTouched' });
 
   const onSubmit = async (data) => {
-    // Mock authentication call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setAuthSuccess(true);
-    setTimeout(() => {
-      setAuthSuccess(false);
-      reset();
-      onClose();
-    }, 2000);
+    setApiError('');
+    try {
+      if (activeTab === 'login') {
+        // If email is admin@workshop.com, attempt real login
+        if (data.email === 'admin@workshop.com') {
+          const res = await adminLogin(data.email, data.password);
+          localStorage.setItem('adminToken', res.token);
+          localStorage.setItem('adminUser', JSON.stringify(res.admin));
+          setAuthSuccess(true);
+          setTimeout(() => {
+            setAuthSuccess(false);
+            reset();
+            onClose();
+            if (onLoginSuccess) onLoginSuccess(res.token);
+          }, 1500);
+          return;
+        }
+      }
+
+      // Mock authentication call for student
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setAuthSuccess(true);
+      setTimeout(() => {
+        setAuthSuccess(false);
+        reset();
+        onClose();
+      }, 1500);
+    } catch (err) {
+      setApiError(err.message || 'Authentication failed');
+    }
   };
 
   const switchTab = (tab) => {
     setActiveTab(tab);
     reset();
     setAuthSuccess(false);
+    setApiError('');
   };
 
   return (
@@ -116,6 +141,19 @@ export default function AuthModal({ isOpen, onClose }) {
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-6">
                   {activeTab === 'login' ? 'Access your student dashboard' : 'Join as parent or student'}
                 </p>
+
+                {apiError && (
+                  <div className="mb-4 p-3.5 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-xs font-bold flex items-center gap-2">
+                    <FaExclamationCircle className="flex-shrink-0 text-base text-red-500" />
+                    <span>{apiError}</span>
+                  </div>
+                )}
+
+                {activeTab === 'login' && (
+                  <div className="mb-5 text-[11px] text-indigo-600 font-semibold bg-indigo-50/50 p-3.5 rounded-2xl border border-indigo-100/50 leading-relaxed">
+                    💡 <strong>Admin Mode:</strong> Use <code className="bg-white px-1 py-0.5 rounded border border-indigo-200 text-indigo-700">admin@workshop.com</code> & password <code className="bg-white px-1 py-0.5 rounded border border-indigo-200 text-indigo-700">Admin@12345</code>.
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   {activeTab === 'signup' && (
