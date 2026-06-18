@@ -71,14 +71,14 @@ Workshop Landing Page/
    ```
 2. The server configuration variables are in `.env` (a template is available in `.env.example`):
    ```env
-   PORT=5000
+   PORT=5001
    MONGODB_URI=mongodb://127.0.0.1:27017/workshop_landing_page
    ```
 3. Run the development server (automatically reloads on changes using `nodemon`):
    ```bash
    npm run dev
    ```
-   *The server runs on http://localhost:5000*
+   *The server runs on http://localhost:5001*
 
 ### 2. Frontend Client Configuration
 
