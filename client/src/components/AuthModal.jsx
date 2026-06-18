@@ -1,0 +1,210 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { FaEnvelope, FaLock, FaUser, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+
+export default function AuthModal({ isOpen, onClose }) {
+  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
+  const [authSuccess, setAuthSuccess] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({ mode: 'onTouched' });
+
+  const onSubmit = async (data) => {
+    // Mock authentication call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setAuthSuccess(true);
+    setTimeout(() => {
+      setAuthSuccess(false);
+      reset();
+      onClose();
+    }, 2000);
+  };
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    reset();
+    setAuthSuccess(false);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
+          />
+
+          {/* Modal Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: 'spring', duration: 0.5 }}
+            className="relative w-full max-w-md bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden z-10 p-8 text-left"
+          >
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors font-bold text-lg"
+            >
+              ✕
+            </button>
+
+            {authSuccess ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center py-12 text-center space-y-4"
+              >
+                <div className="h-16 w-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-3xl shadow-inner border border-emerald-100">
+                  <FaCheckCircle />
+                </div>
+                <h4 className="text-2xl font-black text-slate-900 tracking-tight">
+                  Success!
+                </h4>
+                <p className="text-slate-600 text-sm font-semibold max-w-xs leading-relaxed">
+                  {activeTab === 'login' ? 'Successfully logged in to your account.' : 'Successfully registered. Welcome to Kidrove!'}
+                </p>
+              </motion.div>
+            ) : (
+              <div>
+                {/* Tabs */}
+                <div className="flex border-b border-slate-100 mb-8 mt-2">
+                  <button
+                    onClick={() => switchTab('login')}
+                    className={`pb-4 text-base font-extrabold tracking-tight transition-all relative flex-1 ${
+                      activeTab === 'login' ? 'text-indigo-600 font-black' : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Login
+                    {activeTab === 'login' && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                      />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => switchTab('signup')}
+                    className={`pb-4 text-base font-extrabold tracking-tight transition-all relative flex-1 ${
+                      activeTab === 'signup' ? 'text-indigo-600 font-black' : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Sign Up
+                    {activeTab === 'signup' && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                      />
+                    )}
+                  </button>
+                </div>
+
+                <h3 className="text-2xl font-black text-slate-950 tracking-tight mb-2">
+                  {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
+                </h3>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-6">
+                  {activeTab === 'login' ? 'Access your student dashboard' : 'Join as parent or student'}
+                </p>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                  {activeTab === 'signup' && (
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                        Full Name
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                          <FaUser className="text-sm" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Your full name"
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                          {...register('name', { required: 'Name is required' })}
+                        />
+                      </div>
+                      {errors.name && (
+                        <p className="text-xs font-bold text-red-500 flex items-center gap-1">
+                          <FaExclamationCircle /> {errors.name.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <FaEnvelope className="text-sm" />
+                      </div>
+                      <input
+                        type="email"
+                        placeholder="name@domain.com"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                        {...register('email', {
+                          required: 'Email is required',
+                          pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
+                        })}
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-xs font-bold text-red-500 flex items-center gap-1">
+                        <FaExclamationCircle /> {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <FaLock className="text-sm" />
+                      </div>
+                      <input
+                        type="password"
+                        placeholder="••••••••"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                        {...register('password', {
+                          required: 'Password is required',
+                          minLength: { value: 6, message: 'Password must be at least 6 characters' },
+                        })}
+                      />
+                    </div>
+                    {errors.password && (
+                      <p className="text-xs font-bold text-red-500 flex items-center gap-1">
+                        <FaExclamationCircle /> {errors.password.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full font-black text-sm py-4 rounded-2xl text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] shadow-lg shadow-indigo-100 hover:shadow-indigo-200 transition-all"
+                  >
+                    {isSubmitting ? 'Authenticating...' : activeTab === 'login' ? 'Login' : 'Create Account'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
