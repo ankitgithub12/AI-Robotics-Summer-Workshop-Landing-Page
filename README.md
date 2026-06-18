@@ -56,6 +56,14 @@ Workshop Landing Page/
 
 ---
 
+## Default Admin Credentials
+
+For development and administration testing, the database is automatically seeded with a default administrator account:
+- **Admin Email**: `admin@workshop.com`
+- **Admin Password**: `Admin@12345`
+
+---
+
 ## Setup & Running Instructions
 
 ### Prerequisites

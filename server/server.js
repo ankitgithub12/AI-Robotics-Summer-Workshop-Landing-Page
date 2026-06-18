@@ -35,8 +35,8 @@ connectDB().then(() => {
 // Seed admin user logic
 async function seedAdmin() {
   try {
-    const adminCount = await Admin.countDocuments();
-    if (adminCount === 0) {
+    const adminExists = await Admin.findOne({ email: 'admin@workshop.com' });
+    if (!adminExists) {
       const hashedPassword = await bcrypt.hash('Admin@12345', 10);
       const defaultAdmin = new Admin({
         username: 'admin',
@@ -45,6 +45,8 @@ async function seedAdmin() {
       });
       await defaultAdmin.save();
       console.log('Default Admin user seeded successfully (admin@workshop.com / Admin@12345)');
+    } else {
+      console.log('Admin user already exists (admin@workshop.com). Seeding skipped.');
     }
   } catch (error) {
     console.error('Error seeding admin user:', error);

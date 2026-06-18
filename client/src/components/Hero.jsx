@@ -1,7 +1,10 @@
-import { motion } from 'framer-motion';
-import { FaStar, FaUsers, FaFire } from 'react-icons/fa';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaStar, FaUsers, FaFire, FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Hero({ onOpenAuth }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -16,7 +19,7 @@ export default function Hero({ onOpenAuth }) {
       <div className="absolute right-[-10%] top-[10%] h-[450px] w-[450px] rounded-full bg-purple-300/20 blur-[100px] animate-pulse duration-[10s]" />
       <div className="absolute left-[20%] bottom-[-10%] h-[400px] w-[400px] rounded-full bg-orange-200/20 blur-[100px]" />
 
-      <header className="container mx-auto px-6 mb-16 relative z-20">
+      <header className="container mx-auto px-6 mb-16 relative z-30">
         <div className="flex items-center justify-between py-4 border border-white/40 backdrop-blur-md bg-white/40 px-6 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2.5">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-indigo-200">
@@ -32,7 +35,7 @@ export default function Hero({ onOpenAuth }) {
             <button onClick={() => scrollToSection('curriculum')} className="hover:text-indigo-600 transition-colors">Curriculum</button>
             <button onClick={() => scrollToSection('faqs')} className="hover:text-indigo-600 transition-colors">FAQs</button>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
             <button 
               onClick={onOpenAuth}
               className="text-slate-600 hover:text-indigo-600 font-extrabold text-sm px-4 py-2.5 transition-colors"
@@ -46,7 +49,69 @@ export default function Hero({ onOpenAuth }) {
               Enroll Now
             </button>
           </div>
+          {/* Mobile hamburger menu toggle */}
+          <div className="flex md:hidden items-center gap-2">
+            <button 
+              onClick={onOpenAuth}
+              className="text-slate-600 hover:text-indigo-600 font-extrabold text-xs px-3 py-2 transition-colors mr-1"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-slate-600 hover:text-indigo-600 focus:outline-none transition-colors"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -20, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="md:hidden mt-3 border border-white/40 backdrop-blur-lg bg-white/90 rounded-2xl shadow-xl overflow-hidden flex flex-col p-6 space-y-4 text-left relative z-40"
+            >
+              <button 
+                onClick={() => { scrollToSection('overview'); setMobileMenuOpen(false); }} 
+                className="text-slate-700 hover:text-indigo-600 font-extrabold py-2 border-b border-slate-100 text-left transition-colors text-sm"
+              >
+                Overview
+              </button>
+              <button 
+                onClick={() => { scrollToSection('features'); setMobileMenuOpen(false); }} 
+                className="text-slate-700 hover:text-indigo-600 font-extrabold py-2 border-b border-slate-100 text-left transition-colors text-sm"
+              >
+                Why Us
+              </button>
+              <button 
+                onClick={() => { scrollToSection('curriculum'); setMobileMenuOpen(false); }} 
+                className="text-slate-700 hover:text-indigo-600 font-extrabold py-2 border-b border-slate-100 text-left transition-colors text-sm"
+              >
+                Curriculum
+              </button>
+              <button 
+                onClick={() => { scrollToSection('faqs'); setMobileMenuOpen(false); }} 
+                className="text-slate-700 hover:text-indigo-600 font-extrabold py-2 border-b border-slate-100 text-left transition-colors text-sm"
+              >
+                FAQs
+              </button>
+              <div className="pt-2">
+                <button 
+                  onClick={() => { scrollToSection('register'); setMobileMenuOpen(false); }} 
+                  className="w-full text-center py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-sm transition-all shadow-md shadow-indigo-100"
+                >
+                  Enroll Now
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">

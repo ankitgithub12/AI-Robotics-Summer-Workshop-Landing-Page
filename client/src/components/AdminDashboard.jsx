@@ -513,7 +513,7 @@ export default function AdminDashboard({ token, onLogout }) {
 
           {/* Pagination Footer */}
           {totalPages > 1 && (
-            <div className="p-6 border-t border-slate-100 flex justify-between items-center bg-slate-50/20">
+            <div className="p-6 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/20">
               <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                 Showing {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredEnquiries.length)} of {filteredEnquiries.length}
               </span>
@@ -555,7 +555,7 @@ export default function AdminDashboard({ token, onLogout }) {
       {editingEnquiry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setEditingEnquiry(null)} className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" />
-          <div className="relative w-full max-w-md bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden z-10 p-8 text-left space-y-6">
+          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-[32px] shadow-2xl border border-slate-100 z-10 p-6 md:p-8 text-left space-y-6">
             <div className="flex justify-between items-center">
               <div>
                 <h4 className="text-xl font-black text-slate-900 tracking-tight">Edit Enquiry</h4>
@@ -624,7 +624,7 @@ export default function AdminDashboard({ token, onLogout }) {
       {deletingEnquiry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setDeletingEnquiry(null)} className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" />
-          <div className="relative w-full max-w-sm bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden z-10 p-8 text-center space-y-6">
+          <div className="relative w-full max-w-sm max-h-[90vh] overflow-y-auto bg-white rounded-[32px] shadow-2xl border border-slate-100 z-10 p-6 md:p-8 text-center space-y-6">
             <div className="mx-auto h-16 w-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-2xl border border-red-100 shadow-inner">
               ⚠️
             </div>

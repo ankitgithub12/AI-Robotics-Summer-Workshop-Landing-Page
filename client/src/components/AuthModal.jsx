@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { FaEnvelope, FaLock, FaUser, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaCheckCircle, FaExclamationCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { adminLogin, userSignup, userLogin } from '../services/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
   const [authSuccess, setAuthSuccess] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -172,7 +173,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
                 {activeTab === 'login' && (
                   <div className="mb-5 text-[11px] text-indigo-600 font-semibold bg-indigo-50/50 p-3.5 rounded-2xl border border-indigo-100/50 leading-relaxed">
-                    💡 <strong>Admin Mode:</strong> Use <code className="bg-white px-1 py-0.5 rounded border border-indigo-200 text-indigo-700">admin@workshop.com</code> & password <code className="bg-white px-1 py-0.5 rounded border border-indigo-200 text-indigo-700">Admin@12345</code>.
+                    💡 <strong>Admin Mode:</strong> Use <code className="bg-white px-1 py-0.5 rounded border border-indigo-200 text-indigo-700">admin@workshop.com</code> (Password is in README.md).
                   </div>
                 )}
 
@@ -262,14 +263,21 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                         <FaLock className="text-sm" />
                       </div>
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                        className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
                         {...register('password', {
                           required: 'Password is required',
                           minLength: { value: 6, message: 'Password must be at least 6 characters' },
                         })}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+                      </button>
                     </div>
                     {errors.password && (
                       <p className="text-xs font-bold text-red-500 flex items-center gap-1">

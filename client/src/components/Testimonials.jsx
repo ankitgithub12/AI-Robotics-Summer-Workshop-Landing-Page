@@ -78,7 +78,7 @@ export default function Testimonials() {
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
             Loved by Parents & Students
           </h2>
-          <p className="text-slate-505 text-sm md:text-base font-semibold max-w-md mx-auto">
+          <p className="text-slate-500 text-sm md:text-base font-semibold max-w-md mx-auto">
             Hear from some of our graduates parents who have seen their children build confidence and learn real tech skills.
           </p>
         </div>
