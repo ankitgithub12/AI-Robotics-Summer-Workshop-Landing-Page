@@ -60,4 +60,35 @@ export const deleteEnquiry = async (id, token) => {
   }
 };
 
+// Student User Auth
+export const userSignup = async (userData) => {
+  try {
+    const response = await API.post('/user/signup', userData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Signup failed. Please try again.');
+  }
+};
+
+export const userLogin = async (email, password) => {
+  try {
+    const response = await API.post('/user/login', { email, password });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Authentication failed. Please check your credentials.');
+  }
+};
+
+// Student Profile & Enquiry Linkage
+export const getUserProfile = async (token) => {
+  try {
+    const response = await API.get('/user/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || new Error('Failed to retrieve user profile.');
+  }
+};
+
 export default API;

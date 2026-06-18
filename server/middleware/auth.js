@@ -18,6 +18,7 @@ module.exports = function (req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecretkeyformydashboard123');
     req.admin = decoded.admin;
+    req.user = decoded.user;
     next();
   } catch (err) {
     return res.status(401).json({

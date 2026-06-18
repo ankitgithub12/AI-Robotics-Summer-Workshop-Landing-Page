@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { FaEnvelope, FaLock, FaUser, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import { adminLogin } from '../services/api';
+import { adminLogin, userSignup, userLogin } from '../services/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
@@ -30,20 +30,41 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             setAuthSuccess(false);
             reset();
             onClose();
-            if (onLoginSuccess) onLoginSuccess(res.token);
+            if (onLoginSuccess) onLoginSuccess('admin', res.token);
+          }, 1500);
+          return;
+        } else {
+          // Attempt student login
+          const res = await userLogin(data.email, data.password);
+          localStorage.setItem('userToken', res.token);
+          localStorage.setItem('userUser', JSON.stringify(res.user));
+          setAuthSuccess(true);
+          setTimeout(() => {
+            setAuthSuccess(false);
+            reset();
+            onClose();
+            if (onLoginSuccess) onLoginSuccess('user', res.token);
           }, 1500);
           return;
         }
+      } else {
+        // Student signup
+        const res = await userSignup({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          password: data.password,
+        });
+        localStorage.setItem('userToken', res.token);
+        localStorage.setItem('userUser', JSON.stringify(res.user));
+        setAuthSuccess(true);
+        setTimeout(() => {
+          setAuthSuccess(false);
+          reset();
+          onClose();
+          if (onLoginSuccess) onLoginSuccess('user', res.token);
+        }, 1500);
       }
-
-      // Mock authentication call for student
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setAuthSuccess(true);
-      setTimeout(() => {
-        setAuthSuccess(false);
-        reset();
-        onClose();
-      }, 1500);
     } catch (err) {
       setApiError(err.message || 'Authentication failed');
     }
@@ -157,27 +178,54 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   {activeTab === 'signup' && (
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                        Full Name
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                          <FaUser className="text-sm" />
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                          Full Name
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <FaUser className="text-sm" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Your full name"
+                            className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                            {...register('name', { required: 'Name is required' })}
+                          />
                         </div>
-                        <input
-                          type="text"
-                          placeholder="Your full name"
-                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
-                          {...register('name', { required: 'Name is required' })}
-                        />
+                        {errors.name && (
+                          <p className="text-xs font-bold text-red-500 flex items-center gap-1">
+                            <FaExclamationCircle /> {errors.name.message}
+                          </p>
+                        )}
                       </div>
-                      {errors.name && (
-                        <p className="text-xs font-bold text-red-500 flex items-center gap-1">
-                          <FaExclamationCircle /> {errors.name.message}
-                        </p>
-                      )}
-                    </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                          Phone Number
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-bold text-xs">
+                            +91
+                          </div>
+                          <input
+                            type="tel"
+                            placeholder="9876543210"
+                            className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 text-sm font-semibold"
+                            {...register('phone', {
+                              required: 'Phone number is required',
+                              pattern: { value: /^[6-9]\d{9}$/, message: 'Invalid 10-digit Indian number' },
+                            })}
+                          />
+                        </div>
+                        {errors.phone && (
+                          <p className="text-xs font-bold text-red-500 flex items-center gap-1">
+                            <FaExclamationCircle /> {errors.phone.message}
+                          </p>
+                        )}
+                      </div>
+                    </>
                   )}
 
                   <div className="space-y-1.5">

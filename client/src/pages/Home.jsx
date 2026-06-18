@@ -10,32 +10,49 @@ import RegistrationForm from '../components/RegistrationForm';
 import Footer from '../components/Footer';
 import AuthModal from '../components/AuthModal';
 import AdminDashboard from '../components/AdminDashboard';
+import UserDashboard from '../components/UserDashboard';
 
 export default function Home() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [adminToken, setAdminToken] = useState('');
+  const [userToken, setUserToken] = useState('');
 
   // Check for stored session on load
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      setAdminToken(token);
+    const tokenAdmin = localStorage.getItem('adminToken');
+    if (tokenAdmin) {
+      setAdminToken(tokenAdmin);
+    }
+    const tokenUser = localStorage.getItem('userToken');
+    if (tokenUser) {
+      setUserToken(tokenUser);
     }
   }, []);
 
-  const handleLoginSuccess = (token) => {
-    setAdminToken(token);
+  const handleLoginSuccess = (role, token) => {
+    if (role === 'admin') {
+      setAdminToken(token);
+    } else {
+      setUserToken(token);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userUser');
     setAdminToken('');
+    setUserToken('');
   };
 
-  // Switch between Landing Page and Admin Dashboard
+  // Switch between Landing Page, Admin Dashboard, and User Dashboard
   if (adminToken) {
     return <AdminDashboard token={adminToken} onLogout={handleLogout} />;
+  }
+
+  if (userToken) {
+    return <UserDashboard token={userToken} onLogout={handleLogout} />;
   }
 
   return (

@@ -9,6 +9,7 @@ const socketio = require('socket.io');
 const Admin = require('./models/Admin');
 const bcrypt = require('bcryptjs');
 const adminRoutes = require('./routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -61,6 +62,7 @@ app.use(express.json());
 // Define Routes
 app.use('/api/enquiry', enquiryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/user', userRoutes);
 
 // Socket.io Connection handler
 io.on('connection', (socket) => {
